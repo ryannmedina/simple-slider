@@ -3,17 +3,30 @@
     <div v-for="slide in slides" 
       :key="slide.id" 
       :class="{
-        next: slide.next, current: slide.current, previous: slide.previous,
+        'slide': true, next: slide.next, current: slide.current, previous: slide.previous,
         'slide-in': slide.current && slideDirection,
         'slide-out': slide.previous && slideDirection,
         'slide-in-backwards': slide.previous && !slideDirection,
         'slide-out-backwards': slide.current && !slideDirection        
       }"
       @mouseenter="paused = true"
+      @mouseover="paused = true"
       @mouseleave="paused = false"
     >
       <div><img :src="getImgUrl(slide.src)" /></div>
     </div>
+    <div id="next-button" @mouseenter="paused = true" @mouseover="paused = true" @mouseleave="paused = false"><a href="#" @click="next">next</a></div>
+    <div id="previous-button" @mouseenter="paused = true" @mouseover="paused = true" @mouseleave="paused = false"><a href="#" @click="previous">previous</a></div>
+    <ul id="menu">
+      <li v-for="slide in slides" 
+        :key="slide.id + '-link'"
+        @mouseenter="paused = true"
+        @mouseover="paused = true"
+        @mouseleave="paused = false"
+      >  
+        <a href="#" @click="goTo(slide.id)">{{slide.id}}</a>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -30,7 +43,8 @@ export default class Slider extends Vue {
     { id: 'slide-2', src: 'slide-2', next: false, current: true, previous: false},
     { id: 'slide-3', src: 'slide-3', next: true, current: false, previous: false },
     { id: 'slide-4', src: 'slide-1', next: false, current: false, previous: false },
-    { id: 'slide-5', src: 'slide-2', next: false, current: false, previous: false }
+    { id: 'slide-5', src: 'slide-3', next: false, current: false, previous: false },
+    { id: 'slide-6', src: 'slide-2', next: false, current: false, previous: false }
   ]
   
   public paused: boolean = false
@@ -65,6 +79,7 @@ export default class Slider extends Vue {
       newSlides[newPrevious].previous = true
 
       this.slides = newSlides;
+      this.slideDirection = true
   }
 
   previous() {
@@ -79,6 +94,7 @@ export default class Slider extends Vue {
       newSlides[newPrevious].previous = true
 
       this.slides = newSlides;
+      this.slideDirection = false
   }
 
   resetSlides() {
@@ -93,11 +109,37 @@ export default class Slider extends Vue {
       })
   }
 
+  goTo(slideKey: string) {
+    
+    const slideIndex = this.slides.findIndex(slide => slide.id === slideKey)
+    console.log(slideIndex, 'current: '+ this.currentIndex)
+
+    if (slideIndex < this.currentIndex) {
+
+      let difference = this.currentIndex - slideIndex
+
+      for (let i = this.currentIndex - 1; i >= slideIndex; i--) {
+        //this.previous();
+        console.log('previous', i)
+      }
+
+    } if (slideIndex > this.currentIndex) {
+
+      let difference = slideIndex - this.currentIndex
+
+      for (let i = this.currentIndex + 1; i <= slideIndex; i++) {
+        //this.next();
+        console.log('next', i)
+      }
+
+    }
+
+
+  }
+
   mounted() {
     setInterval(this.timer, this.time)
   }
-
-
 
 }
 </script>
@@ -131,7 +173,7 @@ export default class Slider extends Vue {
   max-width: 100%;
   margin: 0 auto;
   
-  > div { 
+  .slide { 
     width: 100vw;
     position: absolute;
     left: -100vw;
@@ -144,11 +186,11 @@ export default class Slider extends Vue {
 
     &.previous { left: 100vw; }
     
-    &.slide-in { animation-name: slide-in; animation-duration: 1s; animation-iteration-count: 1; animation-timing-function: ease-out; }
-    &.slide-in-backwards { animation-name: slide-in-backwards; animation-duration: 1s; animation-iteration-count: 1; animation-timing-function: ease-out; }
+    &.slide-in { animation-name: slide-in; animation-duration: 500ms; animation-iteration-count: 1; animation-timing-function: ease-out; }
+    &.slide-in-backwards { animation-name: slide-in-backwards; animation-duration: 500ms; animation-iteration-count: 1; animation-timing-function: ease-out; }
 
-    &.slide-out { animation-name: slide-out; animation-duration: 1s; animation-iteration-count: 1; animation-timing-function: ease-out; }
-    &.slide-out-backwards { animation-name: slide-out-backwards; animation-duration: 1s; animation-iteration-count: 1; animation-timing-function: ease-out; }    
+    &.slide-out { animation-name: slide-out; animation-duration: 500ms; animation-iteration-count: 1; animation-timing-function: ease-out; }
+    &.slide-out-backwards { animation-name: slide-out-backwards; animation-duration: 500ms; animation-iteration-count: 1; animation-timing-function: ease-out; }    
 
     div {
       
@@ -158,6 +200,27 @@ export default class Slider extends Vue {
       }
     }
   }
+
+  #previous-button, #next-button {
+    position: absolute;
+    z-index: 2;
+    margin-top: 25%;
+  }
+
+    #previous-button { left: 20px; }
+    #next-button { right: 20px; }
+
+  #menu { 
+    position: absolute; 
+    margin-left: 35%;
+    z-index: 2; 
+    list-style: none; 
+
+    li { display: inline-block; margin-right: 10px; }
+  }
+
+
+
 }
 
 </style>
