@@ -2,7 +2,13 @@
   <div id="slider">
     <div v-for="slide in slides" 
       :key="slide.id" 
-      :class="{next: slide.next, current: slide.current, previous: slide.previous}"
+      :class="{
+        next: slide.next, current: slide.current, previous: slide.previous,
+        'slide-in': slide.current && slideDirection,
+        'slide-out': slide.previous && slideDirection,
+        'slide-in-backwards': slide.previous && !slideDirection,
+        'slide-out-backwards': slide.current && !slideDirection        
+      }"
       @mouseenter="paused = true"
       @mouseleave="paused = false"
     >
@@ -17,6 +23,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component
 export default class Slider extends Vue {
   // Data
+  public time: number = 2000; 
+  
   public slides: Array<any> = [
     { id: 'slide-1', src: 'slide-1', next: false, current: false, previous: true },
     { id: 'slide-2', src: 'slide-2', next: false, current: true, previous: false},
@@ -26,6 +34,8 @@ export default class Slider extends Vue {
   ]
   
   public paused: boolean = false
+  // true is forward and false is backwards
+  public slideDirection: boolean = true;
 
   // Computed
   get slideCount(): number { return this.slides.length; }
@@ -38,17 +48,13 @@ export default class Slider extends Vue {
   }
 
   timer() {
-
     if (!this.paused) {
-      let newSlides = this.slides.map(slide => {
-        let newSlide = {...slide}
+      this.next()
+    }
+  }
 
-        newSlide.next = false;
-        newSlide.current = false;
-        newSlide.previous = false;
-
-        return newSlide;
-      })
+  next() {
+      let newSlides = this.resetSlides()
 
       let newCurrent = (this.currentIndex + 1 === this.slideCount) ? 0 : this.currentIndex + 1
       let newNext = (newCurrent + 1 === this.slideCount) ? 0 : newCurrent + 1      
@@ -59,14 +65,36 @@ export default class Slider extends Vue {
       newSlides[newPrevious].previous = true
 
       this.slides = newSlides;
-    }
+  }
+
+  previous() {
+      let newSlides = this.resetSlides()
+
+      let newCurrent = (this.currentIndex === 0) ? this.slideCount - 1 : this.currentIndex - 1
+      let newNext = (newCurrent === 0) ? this.slideCount - 1 : newCurrent - 1      
+      let newPrevious = this.currentIndex
+
+      newSlides[newNext].next = true
+      newSlides[newCurrent].current = true
+      newSlides[newPrevious].previous = true
+
+      this.slides = newSlides;
+  }
+
+  resetSlides() {
+      return this.slides.map(slide => {
+        let newSlide = {...slide}
+
+        newSlide.next = false;
+        newSlide.current = false;
+        newSlide.previous = false;
+
+        return newSlide;
+      })
   }
 
   mounted() {
-
-    setInterval(this.timer, 2000)
-  
-
+    setInterval(this.timer, this.time)
   }
 
 
@@ -84,7 +112,17 @@ export default class Slider extends Vue {
 
 @keyframes slide-out {
   0%   { left: 0; }
-  100% { left: 100vw; }
+  100% { left: 100vw; display: none; }
+}
+
+@keyframes slide-in-backwards {
+  0%   { left: 0; }
+  100% { left: -100vw; display: none; }
+}
+
+@keyframes slide-out-backwards {
+  0%   { left: 100vw; }
+  100% { left: 0; }
 }
 
 #slider {
@@ -100,23 +138,17 @@ export default class Slider extends Vue {
     display: block;
     font-size: 0;
 
-    &.next { left: -100vw; display: none; }
+    &.next { left: -100vw; }
       
-    &.current { 
-      left: 0;
-      animation-name: slide-in;
-      animation-duration: 1s;
-      animation-iteration-count: 1;
-      animation-timing-function: ease-out;
-    }
+    &.current { left: 0; }
 
-    &.previous {
-      left: 100vw;
-      animation-name: slide-out;
-      animation-duration: 1s;
-      animation-iteration-count: 1;
-      animation-timing-function: ease-out;
-    }
+    &.previous { left: 100vw; }
+    
+    &.slide-in { animation-name: slide-in; animation-duration: 1s; animation-iteration-count: 1; animation-timing-function: ease-out; }
+    &.slide-in-backwards { animation-name: slide-in-backwards; animation-duration: 1s; animation-iteration-count: 1; animation-timing-function: ease-out; }
+
+    &.slide-out { animation-name: slide-out; animation-duration: 1s; animation-iteration-count: 1; animation-timing-function: ease-out; }
+    &.slide-out-backwards { animation-name: slide-out-backwards; animation-duration: 1s; animation-iteration-count: 1; animation-timing-function: ease-out; }    
 
     div {
       
