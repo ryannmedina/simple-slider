@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img src="../../assets/slide-1.jpg" />
+    <img src="../../assets/slide-3.jpg" />
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class Slide1 extends Vue {
+export default class Slide3 extends Vue {
   // Data
 
 }

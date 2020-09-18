@@ -13,7 +13,7 @@
       @mouseover="paused = true"
       @mouseleave="paused = false"
     >
-      <div><img :src="getImgUrl(slide.src)" /></div>
+      <component :is="slide.component" />
     </div>
     <div id="next-button" @mouseenter="paused = true" @mouseover="paused = true" @mouseleave="paused = false"><a href="#" @click="next">next</a></div>
     <div id="previous-button" @mouseenter="paused = true" @mouseover="paused = true" @mouseleave="paused = false"><a href="#" @click="previous">previous</a></div>
@@ -32,8 +32,16 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import Slide1 from './slides/Slide1.vue'
+import Slide2 from './slides/Slide2.vue'
+import Slide3 from './slides/Slide3.vue'
 
-@Component
+
+@Component({
+  components: {
+    Slide1, Slide2, Slide3
+  },
+})
 
 
 export default class Slider extends Vue {
@@ -41,12 +49,12 @@ export default class Slider extends Vue {
   public time: number = 2000; 
   
   public slides: Array<any> = [
-    { id: 'slide-1', src: 'slide-1', next: false, current: false, previous: true },
-    { id: 'slide-2', src: 'slide-2', next: false, current: true, previous: false},
-    { id: 'slide-3', src: 'slide-3', next: true, current: false, previous: false },
-    { id: 'slide-4', src: 'slide-1', next: false, current: false, previous: false },
-    { id: 'slide-5', src: 'slide-3', next: false, current: false, previous: false },
-    { id: 'slide-6', src: 'slide-2', next: false, current: false, previous: false }
+    { id: 'slide-1', component: Slide1, next: false, current: false, previous: true },
+    { id: 'slide-2', component: Slide2, next: false, current: true, previous: false},
+    { id: 'slide-3', component: Slide3, next: true, current: false, previous: false },
+    { id: 'slide-4', component: Slide1, next: false, current: false, previous: false },
+    { id: 'slide-5', component: Slide3, next: false, current: false, previous: false },
+    { id: 'slide-6', component: Slide2, next: false, current: false, previous: false }
   ]
   
   public paused: boolean = false
@@ -57,12 +65,7 @@ export default class Slider extends Vue {
   get slideCount(): number { return this.slides.length; }
   get currentIndex(): number { return this.slides.findIndex(slide => slide.current) }
 
-
-  getImgUrl(image: string) {
-    var images = require.context('../assets/', false, /\.jpg$/)
-    return images('./' + image + ".jpg")
-  }
-
+  // Methods
   timer() {
     if (!this.paused) {
       this.next()
