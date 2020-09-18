@@ -24,7 +24,7 @@
         @mouseover="paused = true"
         @mouseleave="paused = false"
       >  
-        <a href="#" @click="goTo(slide.id)">{{slide.id}}</a>
+        <a href="#" @click="goTo(slide.id)" :class="{ current: slide.current}">{{slide.id}}</a>
       </li>
     </ul>
   </div>
@@ -34,6 +34,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
+
+
 export default class Slider extends Vue {
   // Data
   public time: number = 2000; 
@@ -67,12 +69,15 @@ export default class Slider extends Vue {
     }
   }
 
-  next() {
+  next(slide ?: number) {
       let newSlides = this.resetSlides()
 
       let newCurrent = (this.currentIndex + 1 === this.slideCount) ? 0 : this.currentIndex + 1
+      
+      if (Number.isInteger(slide) && slide !== undefined) { newCurrent = slide }
+      
       let newNext = (newCurrent + 1 === this.slideCount) ? 0 : newCurrent + 1      
-      let newPrevious = this.currentIndex
+      let newPrevious = (newCurrent === 0) ? this.slideCount - 1 : newCurrent - 1
 
       newSlides[newNext].next = true
       newSlides[newCurrent].current = true
@@ -82,12 +87,15 @@ export default class Slider extends Vue {
       this.slideDirection = true
   }
 
-  previous() {
+  previous(slide ?: number) {
       let newSlides = this.resetSlides()
 
       let newCurrent = (this.currentIndex === 0) ? this.slideCount - 1 : this.currentIndex - 1
+      
+      if (Number.isInteger(slide) && slide !== undefined) { newCurrent = slide }
+      
       let newNext = (newCurrent === 0) ? this.slideCount - 1 : newCurrent - 1      
-      let newPrevious = this.currentIndex
+      let newPrevious = (newCurrent + 1 === this.slideCount) ? 0 : newCurrent + 1  
 
       newSlides[newNext].next = true
       newSlides[newCurrent].current = true
@@ -112,28 +120,12 @@ export default class Slider extends Vue {
   goTo(slideKey: string) {
     
     const slideIndex = this.slides.findIndex(slide => slide.id === slideKey)
-    console.log(slideIndex, 'current: '+ this.currentIndex)
 
     if (slideIndex < this.currentIndex) {
-
-      let difference = this.currentIndex - slideIndex
-
-      for (let i = this.currentIndex - 1; i >= slideIndex; i--) {
-        //this.previous();
-        console.log('previous', i)
-      }
-
+      this.previous(slideIndex)
     } if (slideIndex > this.currentIndex) {
-
-      let difference = slideIndex - this.currentIndex
-
-      for (let i = this.currentIndex + 1; i <= slideIndex; i++) {
-        //this.next();
-        console.log('next', i)
-      }
-
+      this.next(slideIndex)
     }
-
 
   }
 
@@ -216,7 +208,12 @@ export default class Slider extends Vue {
     z-index: 2; 
     list-style: none; 
 
-    li { display: inline-block; margin-right: 10px; }
+    li {
+      display: inline-block; margin-right: 10px; 
+
+      .current { color: #fff; }
+
+    }
   }
 
 
