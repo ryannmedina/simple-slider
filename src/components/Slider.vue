@@ -46,15 +46,12 @@ import Slide3 from './slides/Slide3.vue'
 
 export default class Slider extends Vue {
   // Data
-  public time: number = 2000; 
+  public time: number = 3500; 
   
   public slides: Array<any> = [
-    { id: 'slide-1', component: Slide1, next: false, current: false, previous: true },
-    { id: 'slide-2', component: Slide2, next: false, current: true, previous: false},
-    { id: 'slide-3', component: Slide3, next: true, current: false, previous: false },
-    { id: 'slide-4', component: Slide1, next: false, current: false, previous: false },
-    { id: 'slide-5', component: Slide3, next: false, current: false, previous: false },
-    { id: 'slide-6', component: Slide2, next: false, current: false, previous: false }
+    { id: 'slide-1', component: Slide1, next: false, current: true, previous: false },
+    { id: 'slide-2', component: Slide2, next: true, current: false, previous: false},
+    { id: 'slide-3', component: Slide3, next: false, current: false, previous: true }
   ]
   
   public paused: boolean = false
@@ -187,19 +184,14 @@ export default class Slider extends Vue {
     &.slide-out { animation-name: slide-out; animation-duration: 500ms; animation-iteration-count: 1; animation-timing-function: ease-out; }
     &.slide-out-backwards { animation-name: slide-out-backwards; animation-duration: 500ms; animation-iteration-count: 1; animation-timing-function: ease-out; }    
 
-    div {
-      
-      img {
-        max-width: 100%;
-        
-      }
-    }
   }
 
   #previous-button, #next-button {
     position: absolute;
-    z-index: 2;
+    z-index: 5;
     margin-top: 25%;
+    
+    a { color: #fff; }
   }
 
     #previous-button { left: 20px; }
@@ -207,13 +199,19 @@ export default class Slider extends Vue {
 
   #menu { 
     position: absolute; 
-    margin-left: 35%;
+    left: 0; right: 0;
+    margin: 50% auto 0 auto;
+    padding: 0 0;
     z-index: 2; 
-    list-style: none; 
+    list-style: none;
+    text-align: center; 
 
     li {
-      display: inline-block; margin-right: 10px; 
+      display: inline-block; 
+      padding: 0 0;
+      margin-right: 10px; 
 
+      a { color: #999; }
       .current { color: #fff; }
 
     }

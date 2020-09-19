@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="slide-3">
     <img src="../../assets/slide-3.jpg" />
   </div>
 </template>
@@ -17,7 +17,7 @@ export default class Slide3 extends Vue {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 
-  div {
+  #slide-3 {
     
     img {
       max-width: 100%;
